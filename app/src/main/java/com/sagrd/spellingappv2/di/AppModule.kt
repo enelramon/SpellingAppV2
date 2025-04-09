@@ -2,15 +2,8 @@ package com.sagrd.spellingappv2.di
 
 import android.content.Context
 import androidx.room.Room
-import com.sagrd.spellingappv2.data.SpellingDb
-import com.sagrd.spellingappv2.data.dao.PalabraDao
-import com.sagrd.spellingappv2.data.dao.PracticaDao
-import com.sagrd.spellingappv2.data.dao.PracticaDetalleDao
-import com.sagrd.spellingappv2.data.dao.UsuarioDao
-import com.sagrd.spellingappv2.data.repository.PalabraRepository
-import com.sagrd.spellingappv2.data.repository.PracticaDetalleRepository
-import com.sagrd.spellingappv2.data.repository.PracticaRepository
-import com.sagrd.spellingappv2.data.repository.UsuarioRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import com.sagrd.spellingappv2.data.local.database.SpellingAppDb
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,45 +11,32 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Module
 @InstallIn(SingletonComponent::class)
+@Module
 object AppModule {
-
-    @Singleton
     @Provides
-    fun provideSpellingDb(@ApplicationContext context: Context): SpellingDb {
-        val DATABASE_NAME = "SpellingDb"
-        return Room.databaseBuilder(
-            context,
-            SpellingDb::class.java,
-            DATABASE_NAME
-        )
-            .createFromAsset("databases/SpellingDb.db")
-            .fallbackToDestructiveMigration()
-            .build()
-    }
-
     @Singleton
-    @Provides
-    fun providePalabraDao(spellingDb: SpellingDb): PalabraDao {
-        return spellingDb.palabraDao
-    }
+    fun provideDb(@ApplicationContext appContext: Context) =
+        Room.databaseBuilder(
+            appContext,
+            SpellingAppDb::class.java,
+            "SpellingApp.db"
+        ).fallbackToDestructiveMigration().build()
 
-    @Singleton
     @Provides
-    fun provideUsuarioDao(spellingDb: SpellingDb): UsuarioDao {
-        return spellingDb.usuarioDao
-    }
+    @Singleton
+    fun provideHijoDao(spellingAppDb: SpellingAppDb) = spellingAppDb.hijoDao()
 
-    @Singleton
     @Provides
-    fun providePracticaDao(spellingDb: SpellingDb): PracticaDao {
-        return spellingDb.practicaDao
-    }
+    @Singleton
+    fun provideUsuarioDao(spellingAppDb: SpellingAppDb) =  spellingAppDb.usuarioDao()
 
-    @Singleton
     @Provides
-    fun providePracticaDetalleDao(spellingDb: SpellingDb): PracticaDetalleDao {
-        return spellingDb.detalleDao
-    }
+    @Singleton
+    fun providePinDao(spellingAppDb: SpellingAppDb) = spellingAppDb.pinDao()
+
+    @Provides
+    @Singleton
+    fun providePalabra(spellingAppDb: SpellingAppDb) = spellingAppDb.palabraDao()
+
 }

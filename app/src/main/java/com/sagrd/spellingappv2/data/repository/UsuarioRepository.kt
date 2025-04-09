@@ -1,26 +1,46 @@
 package com.sagrd.spellingappv2.data.repository
 
-import com.sagrd.spellingappv2.data.dao.UsuarioDao
-import com.sagrd.spellingappv2.model.Usuario
-import kotlinx.coroutines.flow.Flow
+import com.sagrd.spellingappv2.data.local.dao.UsuarioDao
+import com.sagrd.spellingappv2.data.local.entities.UsuarioConHijoEntity
+import com.sagrd.spellingappv2.data.local.entities.UsuarioEntity
 import javax.inject.Inject
 
 class UsuarioRepository @Inject constructor(
     private val usuarioDao: UsuarioDao
-) {
-    suspend fun upsert(usuario: Usuario) {
-        usuarioDao.upsert(usuario = usuario)
+){
+    suspend fun insertUsuario(usuario: UsuarioEntity): Long {
+        return usuarioDao.insertUsuario(usuario)
     }
 
-    suspend fun delete(usuario: Usuario) {
-        usuarioDao.delete(usuario = usuario)
+    suspend fun updateUsuario(usuario: UsuarioEntity) {
+        usuarioDao.updateUsuario(usuario)
     }
 
-    fun find(usuarioId: Int): Flow<Usuario> {
-        return usuarioDao.find(usuarioId = usuarioId)
+    suspend fun deleteUsuario(usuario: UsuarioEntity) {
+        usuarioDao.deleteUsuario(usuario)
     }
 
-    fun getListStream(): Flow<List<Usuario>> {
-        return usuarioDao.getListStream()
+    suspend fun getAllUsuarios(): List<UsuarioEntity> {
+        return usuarioDao.getAllUsuarios()
+    }
+
+    suspend fun getUsuarioById(id: Int): UsuarioEntity? {
+        return usuarioDao.getUsuarioById(id)
+    }
+
+    suspend fun getUsuarioByEmail(email: String): UsuarioEntity? {
+        return usuarioDao.getUsuarioByEmail(email)
+    }
+
+    suspend fun isTelefonoRegistrado(telefono: String): Boolean {
+        return usuarioDao.getUsuarioByTelefono(telefono) != null
+    }
+
+    suspend fun getUsuarioConHijos(usuarioId: Int): UsuarioConHijoEntity? {
+        return usuarioDao.getUsuarioConHijos(usuarioId)
+    }
+
+    suspend fun getAllUsuariosConHijos(): List<UsuarioConHijoEntity> {
+        return usuarioDao.getAllUsuariosConHijos()
     }
 }
